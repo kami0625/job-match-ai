@@ -4,7 +4,7 @@
 >
 > ✅ pytest 44 用例通过 · ✅ Docker 四服务一键部署 · ✅ 全本地推理 0 token 成本
 >
-> [![CI](https://github.com/YOUR_USERNAME/job-match-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/job-match-ai/actions/workflows/ci.yml)
+> [![CI](https://github.com/kami0625/job-match-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/kami0625/job-match-ai/actions/workflows/ci.yml)
 
 基于 **本地 Ollama** 的求职智能助手，融合「RAG 岗位匹配」与「简历评分优化 Agent」两大功能板块。
 全程本地推理，**不调用任何第三方云端大模型 API**，简历与文档数据不出本机。
