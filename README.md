@@ -1,9 +1,48 @@
 # 求职匹配 AI 系统（全本地私有化部署）
 
+> **RAG 求职匹配 + ReAct Agent 简历评分优化** | FastAPI + Streamlit + Ollama + Chroma + MySQL
+>
+> ✅ pytest 44 用例通过 · ✅ Docker 四服务一键部署 · ✅ 全本地推理 0 token 成本
+>
+> [![CI](https://github.com/YOUR_USERNAME/job-match-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/job-match-ai/actions/workflows/ci.yml)
+
 基于 **本地 Ollama** 的求职智能助手，融合「RAG 岗位匹配」与「简历评分优化 Agent」两大功能板块。
 全程本地推理，**不调用任何第三方云端大模型 API**，简历与文档数据不出本机。
 
+## 界面预览
+
+| 首页 | 岗位匹配 | 简历评分 |
+| ---- | ---- | ---- |
+| ![首页](docs/screenshots/home.png) | ![岗位匹配](docs/screenshots/job-match.png) | ![简历评分](docs/screenshots/resume-score.png) |
+
 ## 一、系统架构
+
+```mermaid
+flowchart TB
+    subgraph Frontend["Streamlit 前端 :8501"]
+        P1["📚 行业知识"]
+        P2["🎯 岗位匹配"]
+        P3["📝 简历评分优化 Agent"]
+    end
+
+    subgraph Backend["FastAPI 后端 :8000"]
+        RAG["/api/rag/*  RAG 求职匹配模块"]
+        AGENT["/api/agent/*  简历评分 Agent 模块"]
+        RAG --> AGENT["联动:Agent 自动调 RAG 检索 JD"]
+    end
+
+    subgraph Storage["数据层"]
+        OLLAMA["Ollama 本地大模型<br/>qwen2:7b + nomic-embed-text"]
+        CHROMA["Chroma 向量库<br/>job_knowledge_base"]
+        MYSQL["MySQL 8.0<br/>job_info 岗位表"]
+    end
+
+    Frontend -->|HTTP REST| Backend
+    RAG --> OLLAMA
+    RAG --> CHROMA
+    RAG --> MYSQL
+    AGENT --> OLLAMA
+```
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -32,7 +71,9 @@
 ## 二、目录结构
 
 ```
-├── docs/                        # 项目文档（技术规格说明书）
+├── docs/                        # 项目文档（技术规格说明书 + 界面截图）
+├── tests/                       # pytest 自动化测试（44 用例:评分/NL2SQL/检索/解析/API）
+├── docker/                      # Docker 编排（backend/frontend 镜像 + compose 四服务）
 ├── app/                         # FastAPI 后端主目录
 │   ├── main.py                  # 启动入口，统一挂载路由 + 全局异常/校验错误中文化
 │   ├── config.py                # 全局配置（读取 .env）
@@ -59,7 +100,55 @@
 └── README.md
 ```
 
-## 三、环境准备
+## 三、一键部署（Docker Compose）
+
+> 推荐方式：无需手动装 MySQL / Ollama / Chroma，一条命令起全部服务。
+
+```bash
+# 1. 配置环境变量(可选,默认 root/123456)
+cp .env.example .env
+
+# 2. 一键构建并启动(首次需拉取镜像与模型,约 5-10 分钟)
+docker compose -f docker/docker-compose.yml up -d --build
+
+# 3. 首次启动 ollama 会自动拉取 qwen2:7b + nomic-embed-text(若未自动拉取)
+docker exec -it jobmatch-ollama ollama pull qwen2:7b
+docker exec -it jobmatch-ollama ollama pull nomic-embed-text
+
+# 4. 访问
+#    前端 http://localhost:8501
+#    后端 http://localhost:8000/docs
+```
+
+服务编排（4 容器）：
+
+| 服务 | 容器名 | 端口 | 说明 |
+| ---- | ---- | ---- | ---- |
+| mysql | jobmatch-mysql | 3306 | MySQL 8.0，自动建库 + 导入样例岗位数据 |
+| ollama | jobmatch-ollama | 11434 | 本地大模型，自动拉取 qwen2:7b + nomic-embed-text |
+| backend | jobmatch-backend | 8000 | FastAPI，等待 MySQL/Ollama 健康后启动 |
+| frontend | jobmatch-frontend | 8501 | Streamlit，等待后端健康后启动 |
+
+停止：`docker compose -f docker/docker-compose.yml down`（加 `-v` 同时清空数据卷）。
+
+## 四、自动化测试（pytest 44 用例）
+
+```bash
+pip install pytest
+pytest tests/ -v
+```
+
+| 测试文件 | 覆盖范围 | 用例数 |
+| ---- | ---- | ---- |
+| `tests/test_benchmark.py` | 锚定评分四档区分度（潦草/普通/良好/顶级）| 9 |
+| `tests/test_nl2sql.py` | SQL 注入防护（DELETE/UNION/DROP/注释/危险函数）| 13 |
+| `tests/test_retrieval.py` | BM25 检索 + 文本分块边界 | 6 |
+| `tests/test_doc_parser.py` | DOCX 解析 / 非法格式 / 空文档 | 5 |
+| `tests/test_api.py` | API 参数校验 + 路由可达（mock 外部服务）| 8 |
+
+> API 测试通过 mock 替换 Ollama/Chroma/MySQL，**无需真实后端即可运行**。
+
+## 五、手动部署（开发调试）
 
 ### 1. 安装依赖（Python >= 3.10）
 
@@ -91,7 +180,7 @@ cp .env.example .env
 # 按需修改 .env 中的 MySQL 账号密码、模型名称等
 ```
 
-## 四、启动系统
+## 六、启动系统
 
 ### 1. 启动 FastAPI 后端（8000 端口）
 
@@ -116,7 +205,7 @@ streamlit run frontend/Home.py
 | 🎯 岗位匹配 | 岗位智能检索（NL2SQL + 多数据源）/ 简历-岗位匹配（自动搜 JD / 上传 JD 精准评估） | `/api/rag/query` `/api/rag/jobs/search` `/api/rag/match/by-*` |
 | 📋 简历评分优化 | ReAct Agent：简历解析 → 获取 JD（自动搜索或用户上传）→ 多维打分 → 优化建议 | `/api/agent/*` |
 
-## 五、核心接口一览
+## 七、核心接口一览
 
 所有接口统一返回 `{"code": 200/400/404/500, "message": "...", "data": {...}}`；参数校验错误已中文化（如「内容过短」）。
 
@@ -142,7 +231,7 @@ streamlit run frontend/Home.py
 | POST | `/api/agent/suggestion` | 单独获取优化建议 |
 | POST | `/api/agent/clear` | Agent 会话清除 |
 
-## 六、外部合规岗位数据源（可插拔 DataSource 模式）
+## 八、外部合规岗位数据源（可插拔 DataSource 模式）
 
 `app/dao/external_api.py` 实现多数据源注册表，`/api/rag/jobs/search` 默认「本地优先 → 外部兜底」，
 并支持 **30 分钟节流增量刷新**（搜索时后台自动拉取最新岗位入库，不阻塞结果返回）：
@@ -156,7 +245,7 @@ streamlit run frontend/Home.py
 
 **为什么不用拉勾/猎聘/BOSS 直聘？** 三家 ToS 均明确禁止未授权爬取，且涉及求职者个人信息（PIPL 合规风险）。本系统坚持只用公开、条款允许的数据源。
 
-## 七、软件测试与质量保障（2026-08 全量回归通过）
+## 九、软件测试与质量保障（2026-08 全量回归通过）
 
 ### 功能测试结果
 
@@ -186,7 +275,7 @@ streamlit run frontend/Home.py
 - **Adzuna 需要申请免费 key**：未配置时自动跳过，不影响本地与腾讯源
 - **数据量受个人资源限制**：腾讯 550+ 真实岗位 + 44 条样例覆盖主流公司/城市/薪资档；企业级数据接入（猎聘/拉勾）需企业资质，留作架构扩展点
 
-## 八、设计约束（遵循 docs/00 规范）
+## 十、设计约束（遵循 docs/00 规范）
 
 1. **分层架构**：api（参数校验）→ service（业务编排）→ dao/utils（底层能力），禁止跨层调用、禁止在接口中写业务逻辑。
 2. **全本地推理**：所有大模型能力统一走 `app/utils/ollama_client.py`，业务代码禁止直接 requests 调用 11434 端口。
@@ -194,7 +283,7 @@ streamlit run frontend/Home.py
 4. **统一响应与异常**：全局异常捕获 + 统一 JSON 格式 + 参数错误中文化，不向客户端透传堆栈与内部路径。
 5. **日志规范**：统一 logging 输出 `[时间] [级别] [模块名] 日志内容`，不记录简历等敏感内容。
 
-## 九、演示素材（data/demo/）
+## 十一、演示素材（data/demo/）
 
 - `样例岗位数据.sql`：岗位样例数据，`mysql -uroot -p job_match_ai < data/demo/样例岗位数据.sql` 导入
 - `样例简历_Java开发工程师.txt`：可直接上传评估的简历

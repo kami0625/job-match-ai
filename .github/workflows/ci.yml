@@ -1,0 +1,47 @@
+# ==================== CI: 测试 + 构建校验 ====================
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: pytest (离线,无需 Ollama/MySQL/Chroma)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt pytest
+          # 测试不依赖 LLM/DB(mock),但需要 matplotlib 等运行依赖
+
+      - name: 运行测试
+        run: pytest tests/ -v --tb=short
+
+  build:
+    name: Docker 镜像构建校验
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 构建后端镜像
+        run: docker build -f docker/backend.Dockerfile -t jobmatch-backend .
+
+      - name: 构建前端镜像
+        run: docker build -f docker/frontend.Dockerfile -t jobmatch-frontend .
+
+      - name: 校验 compose 配置
+        run: docker compose -f docker/docker-compose.yml config --quiet
