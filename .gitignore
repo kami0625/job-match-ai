@@ -27,13 +27,15 @@ data/upload_files/
 # ---- WorkBuddy 会话记录(不进仓库) ----
 .workbuddy/
 
-# ---- 文档产物 ----
+# ---- 文档产物(README 用截图为例外保留) ----
 *.docx
 *.pdf
-*.png
 *.jpg
 *.jpeg
 *.pyc
+# docs/screenshots/*.png 需要进仓库(README 引用)
+!docs/**/*.png
+!docs/**/*.jpg
 
 # ---- IDE / 系统 ----
 .idea/
