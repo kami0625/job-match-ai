@@ -1,0 +1,444 @@
+/* ============================================================
+   JobMatch AI · 白底极简（Notion/Linear 风格）
+   - 纯白底 + 深灰文字 + 浅灰分隔
+   - 无渐变、无 emoji、无阴影
+   - 侧边栏极简文字导航
+   ============================================================ */
+
+:root {
+  --c-text: #1a1a1a;
+  --c-text-dim: #6b6b6b;
+  --c-text-mute: #9a9a9a;
+  --c-bg: #ffffff;
+  --c-surface: #f7f7f5;
+  --c-card: #ffffff;
+  --c-border: #e5e5e3;
+  --c-border-strong: #d0d0ce;
+  --c-hover: #f0f0ee;
+  --c-primary: #1a1a1a;
+  --c-primary-inverse: #ffffff;
+  --radius: 6px;
+  --font: "Inter", "SF Pro Text", "Segoe UI", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+}
+
+/* ---------- 全局基础 ---------- */
+.stApp, html, body, [class*="css"] {
+  font-family: var(--font) !important;
+  color: var(--c-text) !important;
+  font-feature-settings: "cv11", "ss01";
+}
+
+.stApp {
+  background: var(--c-bg) !important;
+}
+
+/* 隐藏 Streamlit 原生装饰 */
+.stApp #MainMenu, .stApp footer, .stApp header[data-testid="stHeader"] {
+  visibility: hidden !important; height: 0 !important;
+}
+.stApp [data-testid="stToolbar"] { display: none !important; }
+
+/* 隐藏 Streamlit 多页应用自动渲染的标题(含 page_icon 彩色 emoji)
+   我自己写的标题是 .jm-page-title 不受影响 */
+.stApp [data-testid="stHeading"],
+.stApp [data-testid="stHeading"] *,
+.stApp [data-testid="stHeadingWithAnchor"],
+.stApp [data-testid="stHeadingWithAnchor"] *,
+.stApp [data-testid="stHeadingWrapper"],
+.stApp [data-testid="stHeadingIcon"],
+.stApp [data-testid="stTitle"],
+.stApp [data-testid="stTitle"] *,
+.stApp h1[data-testid="stHeading"] {
+  display: none !important; visibility: hidden !important; height: 0 !important;
+}
+
+/* 隐藏 sidebar 内的多页应用自动导航列表(我们用自己写的简洁文字导航) */
+.stApp [data-testid="stSidebarNav"] { display: none !important; }
+.stApp [data-testid="stSidebarNavItems"] { display: none !important; }
+
+/* 隐藏所有彩色 emoji/logo(从文件名生成的 page favicon) */
+.stApp [data-testid="stSidebarUserInfo"],
+.stApp [data-testid="stAppLogo"],
+.stApp [data-testid="stLogo"],
+.stApp [class*="SidebarLogo"],
+.stApp [data-testid="stSidebar"] img,
+.stApp [data-testid="stHeader"] img {
+  display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important;
+}
+
+.stApp .block-container {
+  padding-top: 2rem !important;
+  padding-bottom: 4rem !important;
+  max-width: 880px !important;
+}
+
+/* ---------- 滚动条(细窄浅灰) ---------- */
+.stApp ::-webkit-scrollbar { width: 6px; height: 6px; }
+.stApp ::-webkit-scrollbar-track { background: transparent; }
+.stApp ::-webkit-scrollbar-thumb { background: #d0d0ce; border-radius: 6px; }
+.stApp ::-webkit-scrollbar-thumb:hover { background: #b0b0ae; }
+
+/* ---------- 标题(纯文字,无渐变) ---------- */
+.stApp h1, .stApp h2, .stApp h3, .stApp h4 {
+  color: var(--c-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em;
+}
+.jm-page-title {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  margin: 0 0 6px 0 !important;
+  color: var(--c-text) !important;
+  letter-spacing: -0.02em;
+}
+.jm-page-label {
+  font-size: 0.8rem !important;
+  color: var(--c-text-mute) !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500 !important;
+}
+
+/* ---------- 卡片(白底+细边框) ---------- */
+.stApp [data-testid="stVerticalBlockBorderWrapper"],
+.stApp [data-testid="stExpander"] {
+  background: var(--c-card) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: none !important;
+}
+
+/* ---------- 输入框 ---------- */
+.stApp [data-testid="stTextInput"] input,
+.stApp [data-testid="stTextArea"] textarea,
+.stApp [data-testid="stNumberInput"] input {
+  background: var(--c-bg) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: var(--radius) !important;
+  color: var(--c-text) !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease !important;
+}
+.stApp [data-testid="stTextInput"] input:focus,
+.stApp [data-testid="stTextArea"] textarea:focus {
+  border-color: var(--c-text) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.08) !important;
+}
+.stApp [data-testid="stTextInput"] input::placeholder,
+.stApp [data-testid="stTextArea"] textarea::placeholder { color: var(--c-text-mute) !important; }
+
+/* ---------- 按钮(实色+描边) ---------- */
+.stApp .stButton button,
+.stApp .stDownloadButton button,
+.stApp .stFormSubmitButton button {
+  border-radius: var(--radius) !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+}
+.stApp .stButton button[kind="primary"],
+.stApp .stDownloadButton button[kind="primary"] {
+  background: var(--c-primary) !important;
+  border: 1px solid var(--c-primary) !important;
+  color: var(--c-primary-inverse) !important;
+}
+.stApp .stButton button[kind="primary"]:hover {
+  opacity: 0.85 !important;
+}
+.stApp .stButton button[kind="secondary"],
+.stApp .stDownloadButton button[kind="secondary"] {
+  background: var(--c-bg) !important;
+  border: 1px solid var(--c-border) !important;
+  color: var(--c-text) !important;
+}
+.stApp .stButton button[kind="secondary"]:hover {
+  background: var(--c-hover) !important;
+  border-color: var(--c-border-strong) !important;
+}
+.stApp .stButton button:disabled { opacity: 0.4 !important; }
+
+/* ---------- 上传拖拽区 ---------- */
+.stApp [data-testid="stFileUploader"] section {
+  background: var(--c-bg) !important;
+  border: 1px dashed var(--c-border-strong) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease !important;
+}
+.stApp [data-testid="stFileUploader"] section:hover {
+  border-color: var(--c-text) !important;
+  background: var(--c-hover) !important;
+}
+.stApp [data-testid="stFileUploader"] button { border-radius: var(--radius) !important; }
+.stApp [data-testid="stFileUploader"] small { display: none !important; }
+
+/* ---------- Tab(简洁下划线) ---------- */
+.stApp [data-testid="stTabs"] [data-baseweb="tab-list"] {
+  gap: 0 !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--c-border) !important;
+  padding: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+}
+.stApp [data-testid="stTabs"] button[data-baseweb="tab"] {
+  border-radius: 0 !important;
+  padding: 10px 16px !important;
+  color: var(--c-text-dim) !important;
+  border: none !important;
+  background: transparent !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+}
+.stApp [data-testid="stTabs"] button[data-baseweb="tab"]:hover {
+  color: var(--c-text) !important;
+  background: transparent !important;
+}
+.stApp [data-testid="stTabs"] button[aria-selected="true"] {
+  background: transparent !important;
+  color: var(--c-text) !important;
+  border-bottom: 2px solid var(--c-text) !important;
+  margin-bottom: -1px !important;
+  font-weight: 600 !important;
+}
+.stApp [data-testid="stTabs"] [data-baseweb="tab-highlight"] { display: none !important; }
+.stApp [data-testid="stTabs"] [data-baseweb="tab-border"] { display: none !important; }
+
+/* ---------- 侧边栏(白底极简) ---------- */
+.stApp [data-testid="stSidebar"] {
+  background: var(--c-bg) !important;
+  border-right: 1px solid var(--c-border) !important;
+  min-width: 240px !important;
+  padding: 16px 12px !important;
+}
+.stApp [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
+  color: var(--c-text) !important;
+  font-size: 0.9rem !important;
+  margin: 0 !important;
+}
+.stApp [data-testid="stSidebar"] .stCaption,
+.stApp [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+  color: var(--c-text-mute) !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.stApp [data-testid="stSidebar"] [data-testid="stTextInput"] input {
+  background: var(--c-bg) !important;
+  border: 1px solid var(--c-border) !important;
+}
+/* sidebar 内的 page_link 风格:白底透明,hover 浅灰,选中态加粗 */
+.stApp [data-testid="stSidebar"] a[data-testid="stPageLink"] {
+  display: block !important;
+  padding: 6px 10px !important;
+  margin: 2px 0 !important;
+  border-radius: var(--radius) !important;
+  color: var(--c-text-dim) !important;
+  text-decoration: none !important;
+  font-size: 0.9rem !important;
+  transition: all 0.1s ease !important;
+}
+.stApp [data-testid="stSidebar"] a[data-testid="stPageLink"]:hover {
+  background: var(--c-hover) !important;
+  color: var(--c-text) !important;
+}
+.stApp [data-testid="stSidebar"] a[data-testid="stPageLink"][aria-current="page"] {
+  background: var(--c-hover) !important;
+  color: var(--c-text) !important;
+  font-weight: 600 !important;
+}
+
+/* ---------- 指标卡 ---------- */
+.stApp [data-testid="stMetric"] {
+  background: var(--c-card) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: var(--radius) !important;
+  padding: 16px 18px !important;
+  box-shadow: none !important;
+}
+.stApp [data-testid="stMetricLabel"] { color: var(--c-text-dim) !important; font-size: 0.78rem !important; }
+.stApp [data-testid="stMetricValue"] { color: var(--c-text) !important; font-weight: 600 !important; }
+
+/* ---------- 单选/复选/多选 ---------- */
+.stApp [data-testid="stRadio"] label,
+.stApp [data-testid="stCheckbox"] label {
+  color: var(--c-text) !important;
+}
+.stApp [data-testid="stMultiSelect"] span[data-baseweb="tag"] {
+  background: var(--c-surface) !important;
+  border: 1px solid var(--c-border) !important;
+  color: var(--c-text) !important;
+}
+
+/* ---------- 表格/代码块 ---------- */
+.stApp [data-testid="stDataFrame"] {
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--c-border) !important;
+  overflow: hidden !important;
+}
+.stApp [data-testid="stCodeBlock"] pre {
+  background: var(--c-surface) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* ---------- 提示框(左细边) ---------- */
+.stApp [data-testid="stAlert"] {
+  border-radius: var(--radius) !important;
+  border-left-width: 2px !important;
+}
+
+/* ---------- caption 弱化 ---------- */
+.stApp .stCaption, .stApp [data-testid="stCaptionContainer"] {
+  color: var(--c-text-dim) !important;
+}
+
+/* ---------- 顶部导航栏(简化为单条分隔线) ---------- */
+.jm-topbar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 24px !important;
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid var(--c-border) !important;
+}
+.jm-back-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 10px !important;
+  background: transparent !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: var(--radius) !important;
+  color: var(--c-text-dim) !important;
+  font-size: 0.85rem !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.1s ease !important;
+}
+.jm-back-btn:hover { color: var(--c-text) !important; border-color: var(--c-text) !important; }
+
+/* ---------- 状态卡片网格(白底) ---------- */
+.jm-status-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 10px !important;
+  margin: 16px 0 !important;
+}
+.jm-status-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+  background: var(--c-bg) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: var(--radius) !important;
+}
+.jm-status-name { color: var(--c-text-dim) !important; font-size: 0.82rem !important; }
+.jm-status-val { color: var(--c-text) !important; font-weight: 600 !important; font-size: 0.88rem !important; }
+.jm-status-dot {
+  width: 6px !important; height: 6px !important;
+  border-radius: 50% !important;
+  background: var(--c-text-mute) !important;
+  flex-shrink: 0 !important;
+}
+.jm-status-dot.ok { background: #10b981 !important; }
+.jm-status-dot.bad { background: #ef4444 !important; }
+
+/* ---------- 板块卡片(白底+细边框) ---------- */
+.jm-module-card {
+  padding: 24px 24px 20px !important;
+  border-radius: var(--radius) !important;
+  background: var(--c-card) !important;
+  border: 1px solid var(--c-border) !important;
+  transition: border-color 0.15s ease !important;
+}
+.jm-module-card:hover { border-color: var(--c-border-strong) !important; }
+.jm-module-title {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  margin: 0 0 4px 0 !important;
+  color: var(--c-text) !important;
+}
+.jm-module-sub {
+  font-size: 0.7rem !important;
+  color: var(--c-text-mute) !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px !important;
+  font-weight: 500 !important;
+}
+.jm-module-feats { margin: 6px 0 16px 0 !important; }
+.jm-module-feat {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  margin: 6px 0 !important;
+  font-size: 0.88rem !important;
+  color: var(--c-text-dim) !important;
+  line-height: 1.5 !important;
+}
+.jm-feat-marker {
+  display: inline-block !important;
+  width: 4px !important; height: 4px !important;
+  border-radius: 50% !important;
+  margin-top: 8px !important;
+  background: var(--c-text-mute) !important;
+  flex-shrink: 0 !important;
+}
+
+/* ---------- 入口按钮 ---------- */
+.jm-enter-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+}
+.jm-enter-wrap .stButton button,
+.jm-enter-wrap a[data-testid="stPageLink"] {
+  width: 100% !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  border-radius: var(--radius) !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+  font-size: 0.88rem !important;
+  text-decoration: none !important;
+  display: block !important;
+  margin: 0 !important;
+  background: var(--c-primary) !important;
+  color: var(--c-primary-inverse) !important;
+  border: 1px solid var(--c-primary) !important;
+}
+.jm-enter-wrap a[data-testid="stPageLink"]:hover,
+.jm-enter-wrap .stButton button:hover {
+  opacity: 0.85 !important;
+  color: var(--c-primary-inverse) !important;
+}
+.jm-enter-wrap .jm-enter-btn-secondary,
+.jm-enter-wrap a.jm-enter-btn-secondary {
+  background: var(--c-bg) !important;
+  color: var(--c-text) !important;
+  border: 1px solid var(--c-border) !important;
+}
+.jm-enter-wrap a.jm-enter-btn-secondary:hover {
+  background: var(--c-hover) !important;
+  color: var(--c-text) !important;
+}
+
+/* ---------- 底部 ---------- */
+.jm-footer {
+  color: var(--c-text-mute) !important;
+  font-size: 0.78rem !important;
+  text-align: center !important;
+  margin-top: 48px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid var(--c-border) !important;
+}
+
+/* ---------- 分隔线 ---------- */
+.jm-divider {
+  height: 1px !important;
+  background: var(--c-border) !important;
+  margin: 20px 0 !important;
+}

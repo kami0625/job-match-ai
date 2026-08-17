@@ -1,0 +1,18 @@
+# ==================== Docker 构建忽略 ====================
+# 排除大文件/敏感文件,避免打入镜像
+.venv/
+venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+data/chroma_db/
+data/upload_files/
+*.docx
+*.pdf
+*.sql
+.env
+.workbuddy/
+tests/
+docs/
+.pytest_cache/

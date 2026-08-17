@@ -1,0 +1,46 @@
+# ============ 求职匹配 AI 系统 · Git 忽略规则 ============
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+
+# ---- 虚拟环境 ----
+.venv/
+venv/
+env/
+
+# ---- 敏感配置 ----
+.env
+*.local
+
+# ---- 本地数据(向量库/上传文件) ----
+data/chroma_db/
+data/upload_files/
+*.sqlite3
+*.db
+
+# ---- WorkBuddy 会话记录(不进仓库) ----
+.workbuddy/
+
+# ---- 文档产物 ----
+*.docx
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.pyc
+
+# ---- IDE / 系统 ----
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ---- 运行时 ----
+*.log
+nohup.out
