@@ -3,9 +3,9 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# 依赖层缓存（streamlit 单独装，与后端隔离）
+# 依赖层缓存(用官方 pypi + timeout,CI 跑避免超时)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN pip install --no-cache-dir --default-timeout=180 -r requirements.txt
 
 # 前端代码
 COPY frontend/ ./frontend/
