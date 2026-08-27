@@ -3,13 +3,14 @@
 # 安装：pip install -r requirements.txt
 
 # ---- Web 框架 ----
-# fastapi 0.115+ 兼容 starlette 1.x(sse-starlette 3.x/fastmcp 依赖)
-fastapi>=0.115.0,<0.120.0
-uvicorn[standard]>=0.30.1,<0.40.0
-python-multipart==0.0.9
+# fastmcp-slim[client,server] 拉 starlette>=1.x;fastapi 0.121 锁 <0.50 → 升到 0.141+ 解锁
+fastapi>=0.130.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
 
 # ---- 配置 ----
-python-dotenv==1.0.1
+# fastmcp-slim 要求 python-dotenv>=1.1
+python-dotenv>=1.1.0
 
 # ---- 应用框架 ----
 langchain==0.2.5
