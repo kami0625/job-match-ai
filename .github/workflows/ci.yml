@@ -24,8 +24,11 @@ jobs:
 
       - name: 安装依赖
         run: |
-          pip install -r requirements.txt pytest
-          # 测试不依赖 LLM/DB(mock),但需要 matplotlib 等运行依赖
+          # fastmcp 装包会升级 starlette 到 1.x,导致 fastapi 0.111 不兼容
+          # 先 pin 兼容版(0.37.2 < 0.38),再装 fastmcp 复用已装版本
+          pip install "starlette==0.37.2" "uvicorn[standard]==0.30.1"
+          pip install -r requirements.txt
+          pip install pytest
 
       - name: 运行测试
         run: pytest tests/ -v --tb=short
