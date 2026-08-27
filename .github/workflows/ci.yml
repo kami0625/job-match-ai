@@ -24,9 +24,8 @@ jobs:
 
       - name: 安装依赖
         run: |
-          # fastmcp 装包会升级 starlette 到 1.x,导致 fastapi 0.111 不兼容
-          # 先 pin 兼容版(0.37.2 < 0.38),再装 fastmcp 复用已装版本
-          pip install "starlette==0.37.2" "uvicorn[standard]==0.30.1"
+          # fastapi 0.115+ 自带 starlette 1.x 兼容;fastmcp 也需要 starlette>=1
+          # requirements 已统一版本,直接装即可
           pip install -r requirements.txt
           pip install pytest
 

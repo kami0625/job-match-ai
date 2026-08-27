@@ -3,8 +3,9 @@
 # 安装：pip install -r requirements.txt
 
 # ---- Web 框架 ----
-fastapi==0.111.0
-uvicorn[standard]==0.30.1
+# fastapi 0.115+ 兼容 starlette 1.x(sse-starlette 3.x/fastmcp 依赖)
+fastapi>=0.115.0,<0.120.0
+uvicorn[standard]>=0.30.1,<0.40.0
 python-multipart==0.0.9
 
 # ---- 配置 ----
