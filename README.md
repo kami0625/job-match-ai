@@ -28,6 +28,7 @@ flowchart TB
     subgraph Backend["FastAPI 后端 :8000"]
         RAG["/api/rag/*  RAG 求职匹配模块"]
         AGENT["/api/agent/*  简历评分 Agent 模块"]
+        MCP["MCP Server :8001<br/>工具标准化(查JD/解析/评分)<br/>stdio + SSE 双传输"]
         RAG --> AGENT["联动:Agent 自动调 RAG 检索 JD"]
     end
 
@@ -38,6 +39,8 @@ flowchart TB
     end
 
     Frontend -->|HTTP REST| Backend
+    EXTERNAL["外部 Agent / Claude / 工具客户端"] -->|MCP 协议| MCP
+    MCP --> RAG
     RAG --> OLLAMA
     RAG --> CHROMA
     RAG --> MYSQL
@@ -88,6 +91,7 @@ flowchart TB
 │   └── modules/                 # 业务模块
 │       ├── rag_module/          # RAG 求职匹配（api 接口层 / service 业务层）
 │       └── agent_module/        # 简历评分 ReAct Agent（config / tools / memory / parser / service / api）
+│   └── mcp_server.py            # MCP 协议服务（fastmcp 包装查JD/解析/评分 3 工具，stdio+SSE）
 ├── frontend/                    # Streamlit 前端
 │   ├── Home.py                  # 首页（页面导航）
 │   └── pages/
@@ -225,6 +229,7 @@ streamlit run frontend/Home.py
 | GET | `/api/rag/jobs/sources` | 外部数据源列表（含是否可用） |
 | GET | `/api/rag/jobs/{id}` | 岗位详情 |
 | POST | `/api/agent/evaluate` | Agent 一键评估（ReAct 多轮工具调用，支持用户上传 JD） |
+| MCP | `python -m app.mcp_server` | MCP 协议服务（stdio 默认 / `sse` 网络模式；暴露 `get_job_requirements` / `parse_resume` / `benchmark_resume` 3 个工具） |
 | POST | `/api/agent/evaluate/stream` | Agent 评估（SSE 流式，展示思考过程） |
 | POST | `/api/agent/parse` | 简历解析（结构化 + 简历特征校验） |
 | POST | `/api/agent/score` | 简历-JD 四维匹配打分 |
